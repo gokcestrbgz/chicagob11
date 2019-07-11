@@ -1,63 +1,71 @@
 package StarbugzProject;
 
-import com.github.javafaker.Faker;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.Select;
+import org.testng.Assert;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.util.concurrent.TimeUnit;
 
 public class RabiaStarbugzDealsUseTestNG {
-    WebDriver driver;
+   static WebDriver driver;
     @BeforeClass
     public void setUp(){
         WebDriverManager.chromedriver().setup();
         driver = new ChromeDriver();
         driver.manage().window().fullscreen();
         driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-        driver.get("https://www.orbitz.com/Deals");
 
     }
+    @BeforeMethod
+    public void goToWebApp(){
+        driver.get("https://www.orbitz.com/");
+
+    }
+    @AfterClass
+    public void closed(){
+        driver.close();
+    }
+
+
 
 
     @Test
 
     public void dealsHotelOnly() throws InterruptedException {
 
-        WebElement hotelOnly = driver.findElement(By.xpath("//a[@href='javascript:void(0)'][1]"));
+        WebElement clickToDeals = driver.findElement(By.id("primary-header-deals"));
+        clickToDeals.click();
+
         String destination = "Chicago";
-        WebElement inputDestination = driver.findElement(By.xpath("//input[@id='H-destination']"));
+        WebElement inputDestination = driver.findElement(By.xpath("//input[@name='PlaceName']"));
         inputDestination.sendKeys(destination);
-        if(inputDestination.isDisplayed())  {
-            System.out.println("Destination is selected, verification PASSED!");
-        } else{
-            System.out.println("Destination is NOT selected, verification FAILED!");
-        }
+        Thread.sleep(2000);
+        driver.findElement(By.id("aria-option-0")).click();
+        Thread.sleep(2000);
 
         //User should passed valid date- Date should not accept past days
-        WebElement checkInDate = driver.findElement(By.name("InDate"));
+        WebElement checkInDatehotelonly = driver.findElement(By.xpath("//label[@class='datepicker-label datepicker-arrow text icon-before']"));
+        Assert.assertTrue(checkInDatehotelonly.isDisplayed(), "Destination input button is not displayed");
+        checkInDatehotelonly.click();
         String selectCheckInDate =  "8/8/2019";
-        checkInDate.sendKeys(selectCheckInDate);
-        if(checkInDate.isDisplayed()){
-            System.out.println("Check-In Date is selected, verification PASSED!");
-        }    else{
-            System.out.println("Check-In Date is NOT selected, verification FAILED!");
-        }
+        checkInDatehotelonly.sendKeys(selectCheckInDate);
+        Thread.sleep(2000);
+
+
         //Check-Out date shoul be after Check-in date , it should select  1 after day by default
         WebElement checkOutDate = driver.findElement(By.name("OutDate"));
         checkOutDate.click();
         Thread.sleep(3000);
         checkOutDate.findElement(By.xpath("//button[@data-day='30']")).click();
-        if(checkOutDate.isDisplayed()) {
-            System.out.println("Check-Out Date is selected, verification PASSED!");
-        } else{
-            System.out.println("Check-Out Date is NOT selected, verification FAILED!");
-        }
+
         WebElement rooms = driver.findElement(By.id("NumRoom"));
         //it should choose "1" by default
         Select roomsDropdown = new Select(rooms);
@@ -69,11 +77,6 @@ public class RabiaStarbugzDealsUseTestNG {
         Select adultsSelectDropdown = new Select(adultsPlus18);
         String adultsPlus18SelectedOption = adultsSelectDropdown.getFirstSelectedOption().getText();
         adultsSelectDropdown.selectByValue("1");
-        if(adultsPlus18.isDisplayed())     {
-            System.out.println("Aduld verification is Passed");
-        }  else{
-            System.out.println("Aduld verification is Failed!!");
-        }
 
         //it should choose "0" by default
         WebElement children = driver.findElement(By.xpath("//select[@id='NumChild1'][1]"));
@@ -86,17 +89,14 @@ public class RabiaStarbugzDealsUseTestNG {
 
     }
 
-    @Test (priority = 1)
-    public void dealsThingsToDo(){
-        WebElement clickDeals = driver.findElement(By.id("primary-header-deals"));
-        clickDeals.click();
-        WebElement deals = driver.findElement(By.id("primary-header-deals"));
-        deals.click();
-        Faker faker = new Faker();
+    @Test
+    public void dealsThingsToDo() throws InterruptedException{
+
+        WebElement clickToDeals = driver.findElement(By.id("primary-header-deals"));
+        clickToDeals.click();
 
         WebElement thingsToDo = driver.findElement(By.xpath("(//span[@class='tab-label'])[5]"));
         thingsToDo.click();
-
 
         WebElement inputDestination = driver.findElement(By.id("A-destination"));
         inputDestination.sendKeys("Chicago");
@@ -116,13 +116,10 @@ public class RabiaStarbugzDealsUseTestNG {
         searchButton.click();
     }
 
-    @Test(priority = 2)
-    public void ealsCarsOnly(){
-        WebElement clickDeals = driver.findElement(By.id("primary-header-deals"));
-        clickDeals.click();
-        WebElement deals = driver.findElement(By.id("primary-header-deals"));
-        deals.click();
-        Faker faker = new Faker();
+    @Test
+    public void dealsCarsOnly(){
+       WebElement goTotheDealsPage = driver.findElement(By.id("primary-header-deals"));
+        goTotheDealsPage.click();
 
         WebElement carsOnly = driver.findElement(By.xpath("(//span[@class='tab-label'])[4]"));
         carsOnly.click();
@@ -142,10 +139,10 @@ public class RabiaStarbugzDealsUseTestNG {
 
         WebElement dropOffDate = driver.findElement(By.id("C-toDate"));
         dropOffDate.click();
-        dropOffDate.findElement(By.xpath("(//button[@data-day='30'])[2]")).click();
+        dropOffDate.findElement(By.xpath("(//table[@class='datepicker-cal-weeks'])[2]/tbody//tr[4]//td[5]")).click();
 
-        WebElement searchButton = driver.findElement(By.id("C-searchButtonExt1"));
-        searchButton.click();
+        WebElement searchButtonForCars = driver.findElement(By.id("C-searchButtonExt1"));
+        searchButtonForCars.click();
 
     }
 
