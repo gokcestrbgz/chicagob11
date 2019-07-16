@@ -37,7 +37,6 @@ public class RabiaStarbugzDealsUseTestNG {
 
 
 
-    @Test
 
     public void dealsHotelOnly() throws InterruptedException {
 

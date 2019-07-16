@@ -6,11 +6,17 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.Select;
+import org.testng.annotations.Test;
+import utilities.Config;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class Dropdown {
+    @Test
+    public void testing(){
+        System.out.println(Config.getProperty("url"));
+    }
     public static void main(String[] args) {
         WebDriverManager.chromedriver().setup();
         WebDriver driver = new ChromeDriver();
